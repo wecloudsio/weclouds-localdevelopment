@@ -1,0 +1,81 @@
+# Source of truth: https://hub.docker.com/_/mariadb
+# and for postgres: https://github.com/khezen/compose-postgres/blob/master/docker-compose.yml
+# see: https://mariadb.com/kb/en/setting-up-a-lamp-stack-with-docker-compose/
+# this magic trick solved the problem of the initial db-script not being run: https://stackoverflow.com/questions/57643617/mariadb-docker-container-refuses-to-initialize-with-database-schema
+
+# you cannot have both an env_file and environment in the config-file
+version: "3.8"
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGDATA: /data/postgres
+    ports:
+      - '5432:5432'
+    networks:
+      - postgres
+    volumes:
+      - postgres:/data/postgres
+      # copy the sql script to create tables
+      - ./init/postgres-init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      # copy the sql script to fill tables
+      # - ./sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: wecloudsio@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  mariadb:
+    image: mariadb:latest
+    ports:
+      - 3306:3306
+    restart: 'always'
+    volumes:
+      - ~/docker-volumes/weclouds-parent-local-development/db_data:/var/lib/mysql #host-directory for mysql-data will be found here
+      - ./init/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql/:ro # init
+    environment:
+      MYSQL_ROOT_PASSWORD: weclouds
+      MYSQL_DATABASE: weclouds
+      MYSQL_USER: weclouds
+      MYSQL_PASSWORD: weclouds
+  # https://docs.localstack.cloud/get-started/#docker-compose
+  localstack:
+    image: localstack/localstack
+    network_mode: bridge
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Edge Proxy
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - ./init/aws-s3.sh:/docker-entrypoint-initaws.d/aws-s3.sh/:ro
+      - ./init/images-for-localstack-s3:/docker-entrypoint-initaws.d/images-for-localstack-s3 # copy initial s3-objects such as images to container
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
+
