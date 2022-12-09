@@ -48,6 +48,19 @@ Setting up the local development environment in a consisten and uniform way
 - jdbc:mariadb://localhost:3306/weclouds
 - User: weclouds; Pw: weclouds; database: weclouds; root-user: weclouds
 
+## local-development: how to access Postgres
+
+- We are using Postgres 14 (AWS does not support version 15 yet, 11/2022)
+- The database is pre-populated with some data
+- jdbc:postgresql://localhost:5432/postgres
+- User: weclouds; Pw: weclouds; database: postgres; super-user:postgres
+
+## how database-data is handled
+
+- Data will be kept persistent, even after shutting down local-development via docker compose down
+- Database data is kept in the directories under: ~/docker-volumes/weclouds-parent-local-development
+- If you want to delete db and start fresh: delete those data-dirs on your local disk
+
 ## local-development: how to access email (mailhog)
 
 - https://medium.com/@elitcenkalp/install-mailhog-with-docker-compose-2f5668848c0b

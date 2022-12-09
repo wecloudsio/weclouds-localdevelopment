@@ -7,22 +7,17 @@
 version: "3.8"
 services:
   postgres:
-    image: postgres
+    image: postgres:14.6-alpine # version 14, not 15, 15 is not supported yet by AWS (as of 11/2022)
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
-      PGDATA: /data/postgres
+      POSTGRES_PASSWORD: weclouds # the superuser for the default-database "postgres"
     ports:
       - '5432:5432'
     networks:
       - postgres
     volumes:
-      - postgres:/data/postgres
-      # copy the sql script to create tables
-      - ./init/postgres-init.sql:/docker-entrypoint-initdb.d/create_tables.sql
-      # copy the sql script to fill tables
-      # - ./sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
+      - ~/docker-volumes/weclouds-parent-local-development/db_data_postgresql:/var/lib/postgresql/data
+      - ./init/postgres:/docker-entrypoint-initdb.d:rw
 
   pgadmin:
     image: dpage/pgadmin4
@@ -44,7 +39,7 @@ services:
       - 3306:3306
     restart: 'always'
     volumes:
-      - ~/docker-volumes/weclouds-parent-local-development/db_data:/var/lib/mysql #host-directory for mysql-data will be found here
+      - ~/docker-volumes/weclouds-parent-local-development/db_data_mariadb:/var/lib/mysql #host-directory for mysql-data will be found here
       - ./init/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql/:ro # init
     environment:
       MYSQL_ROOT_PASSWORD: weclouds
