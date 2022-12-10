@@ -52,14 +52,21 @@ Setting up the local development environment in a consisten and uniform way
 
 - We are using Postgres 14 (AWS does not support version 15 yet, 11/2022)
 - The database is pre-populated with some data
-- jdbc:postgresql://localhost:5432/postgres
-- User: weclouds; Pw: weclouds; database: postgres; super-user:postgres
+- jdbc:postgresql://localhost:5432/postgres (to be used in code or IntelliJ-db-plugin)
+- User: postgres; Pw: weclouds; port: 5432; database: postgres; super-user:postgres; SSL: no
+- docker-compose installs tool pgadmin under http://localhost:5050/, see: https://www.pgadmin.org
+- Access database-server from pgadmin via IP 192.168.192.1 (check the networks installed by
+  docker-compose, e.g. via
+  Intellij --> Services --> Docker --> Docker-compose:local-development -->
+  local-development_postgres --> Inspection --> Gateway )
 
 ## how database-data is handled
 
 - Data will be kept persistent, even after shutting down local-development via docker compose down
 - Database data is kept in the directories under: ~/docker-volumes/weclouds-parent-local-development
 - If you want to delete db and start fresh: delete those data-dirs on your local disk
+- Any scripts in the init-directory (either .sh or .sql) will be executed by docker during dc up.
+  That's why those directories are mounted as volumes in the containers
 
 ## local-development: how to access email (mailhog)
 
