@@ -52,12 +52,15 @@ Setting up the local development environment in a consisten and uniform way
 
 - We are using Postgres 14 (AWS does not support version 15 yet, 11/2022)
 - The database is pre-populated with some data
-- jdbc:postgresql://localhost:5432/postgres (to be used in code or IntelliJ-db-plugin)
-- User: postgres; Pw: weclouds; port: 5432; database: postgres; super-user:postgres; SSL: no
+- We are starting 2 postgres-databases: one for local-development (using the client) and one for
+  unit-tests
+  - for local-development: jdbc:postgresql://localhost:5432/postgres
+  - for unit-testing:      jdbc:postgresql://localhost:5433/postgres
+- User: postgres; Pw: weclouds; port: 5432 or 5433 (see above); database: postgres; super-user:
+  postgres; SSL: no
 - docker-compose installs tool pgadmin under http://localhost:5050/, see: https://www.pgadmin.org
 - Access database-server from pgadmin via IP 192.168.192.1 (check the networks installed by
-  docker-compose, e.g. via
-  Intellij --> Services --> Docker --> Docker-compose:local-development -->
+  docker-compose, e.g. via Intellij --> Services --> Docker --> Docker-compose:local-development -->
   local-development_postgres --> Inspection --> Gateway )
 
 ## how database-data is handled

@@ -6,7 +6,7 @@
 # you cannot have both an env_file and environment in the config-file
 version: "3.8"
 services:
-  postgres:
+  postgres-local:
     image: postgres:14.6-alpine # version 14, not 15, 15 is not supported yet by AWS (as of 11/2022)
     restart: always
     environment:
@@ -16,10 +16,23 @@ services:
     networks:
       - postgres
     volumes:
-      - ~/docker-volumes/weclouds-parent-local-development/db_data_postgresql:/var/lib/postgresql/data
+      - ~/docker-volumes/weclouds-parent-local-development/db_data_postgresql-local:/var/lib/postgresql/data
       - ./init/postgres:/docker-entrypoint-initdb.d:rw
 
-  pgadmin:
+  postgres-unittests:
+    image: postgres:14.6-alpine # version 14, not 15, 15 is not supported yet by AWS (as of 11/2022)
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: weclouds # the superuser for the default-database "postgres"
+    ports:
+      - '5433:5432' # use host-port 5433 since host-port 5432 is used by postgres-local
+    networks:
+      - postgres
+    volumes:
+      - ~/docker-volumes/weclouds-parent-local-development/db_data_postgresql-unittests:/var/lib/postgresql/data
+      - ./init/postgres:/docker-entrypoint-initdb.d:rw
+
+  pgadmin-local:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: wecloudsio@gmail.com
