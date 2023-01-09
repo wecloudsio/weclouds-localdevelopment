@@ -28,7 +28,7 @@ Setting up the local development environment in a consisten and uniform way
 - We try to stay as close to the latest version as possible
 - Changelog and latest version: https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst
 
-# local-development: how to access S3
+# local-development: how to access S3 via localstack
 
 - We are using localstack (Docker latest)
 - This is run by a localstack image installed via docker-compose
@@ -40,6 +40,25 @@ Setting up the local development environment in a consisten and uniform way
 - List content of bucket: 'aws s3 --endpoint=http://localhost:4566 ls s3://weclouds-uploaded'
 - Sync a temp folder with bucket: 'aws s3 --endpoint=http://localhost:4566 sync . s3:
   //weclouds-uploaded'
+
+## local-development: IAM (todo)
+
+- See: https://docs.localstack.cloud/user-guide/aws/iam/
+
+## local-development: Elasticsearch (todo)
+
+- See example for docker compose file: https://docs.localstack.cloud/user-guide/aws/elasticsearch/
+
+## local-development: SNS (todo)
+
+- For sending out notifications via email/push/sms
+- Or: for basic publish/subscribe pattern
+- See: https://docs.localstack.cloud/user-guide/aws/sns/
+
+## local-development: how to access CloudFormation
+
+- We are using localstack
+- http://localhost:4566/_localstack/cloudformation/deploy
 
 ## local-development: how to access MariaDB
 
